@@ -19,7 +19,21 @@ def depthFirstSearch(problem):
     """
 
     # *** Your Code Here ***
-    raise NotImplementedError()
+    
+    # Initialize node, frontier queue, and reached queue
+    node = Node(problem.startingState())
+    if problem.isGoal(node.state):
+        return node
+    frontier = []  # FIFO queue, pop with frontier.pop(0) and add with frontier.append()
+    frontier.append(node)
+    reached = []  # List of reached nodes
+    reached.append(problem.startingState())
+
+    # While frontier is not empty:
+    # 1. Node = pop(frontier)
+    # 2. 
+    
+
 
 def breadthFirstSearch(problem):
     """
