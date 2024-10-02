@@ -1,7 +1,8 @@
 """
 In this file, you will implement generic search algorithms which are called by Pacman agents.
 """
-
+from pacai.util.stack import Stack
+from pacai.core.actions import Actions
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first [p 85].
@@ -20,18 +21,37 @@ def depthFirstSearch(problem):
 
     # *** Your Code Here ***
     
-    # Initialize node, frontier queue, and reached queue
-    node = Node(problem.startingState())
-    if problem.isGoal(node.state):
-        return node
-    frontier = []  # FIFO queue, pop with frontier.pop(0) and add with frontier.append()
-    frontier.append(node)
-    reached = []  # List of reached nodes
-    reached.append(problem.startingState())
+    # Initialize node, frontier stack, and reached set
+    node = problem.startingState()
+    moves = []  # List of moves to return to agent
+    if problem.isGoal(node):
+        return moves
+    frontier = Stack()
+    moveset = Stack()
+    frontier.push(node)
+    reached = set()
+    
 
     # While frontier is not empty:
-    # 1. Node = pop(frontier)
-    # 2. 
+    # 1. Pop frontier stack and set node to popped element
+    # 2. Check if the node is the goal state: if it is, return it.
+    # 3. If not, add the node to the set of explored nodes and push all unvisited successors onto the frontier stack
+    while not frontier.isEmpty():
+        node = frontier.pop()
+        if problem.isGoal(node):
+            return moves
+        reached.add(node)
+        successors = problem.successorStates(node)
+        for state in successors:
+            temp_node = state[0]
+            temp_move = state[1]
+            if temp_node not in frontier.list and temp_node not in reached:
+                frontier.push(temp_node)
+    return None
+
+
+
+    
     
 
 
