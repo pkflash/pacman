@@ -3,6 +3,11 @@ In this file, you will implement generic search algorithms which are called by P
 """
 from pacai.util.stack import Stack
 from pacai.core.actions import Actions
+
+class Node:
+    def __init__(self, state, parent=None):
+        self.state = state
+        self.parent = parent
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first [p 85].
@@ -18,15 +23,13 @@ def depthFirstSearch(problem):
     print("Start's successors: %s" % (problem.successorStates(problem.startingState())))
     ```
     """
-
     # *** Your Code Here ***
     # Initialize current state, frontier stack, and reached set
     # TODO: Implement move stack
-    current_state = problem.startingState()
-    moves = Stack()
+    node = Node(problem.startingState())
     frontier = Stack()
     reached = set()
-    frontier.push(current_state)
+    frontier.push(node)
     
 
     # While frontier is not empty:
@@ -34,14 +37,30 @@ def depthFirstSearch(problem):
     # 2. Check if the node is the goal state: if it is, return it.
     # 3. If not, add the node to the set of explored nodes and push all unvisited successors onto the frontier stack
     while not frontier.isEmpty():
-        current_state = frontier.pop()
-        if problem.isGoal(current_state):
+        node = frontier.pop()
+        if problem.isGoal(node.state):
+            moves = []  # Array to return
+            parent = node.parent
+            while parent is not None:
+                # Calculate vector direction from parent node to current node
+                # Convert vector to direction, and prepend it to move list
+                # Set node to parent, and parent to node.parent
+                vector = (node.state[0] - parent.state[0], node.state[1] - parent.state[1])
+                action = Actions.vectorToDirection(vector)
+                moves.insert(0, action)
+                node = parent
+                parent = node.parent
+
             return moves
-        reached.add(current_state)
-        successors = problem.successorStates(current_state)
+
+
+            
+        reached.add(node.state)
+        successors = problem.successorStates(node.state)
         for state in successors:
-            temp_node = state[0]
-            if temp_node not in frontier.list and temp_node not in reached:
+            temp_state = state[0]
+            if temp_state not in frontier.list and temp_state not in reached:
+                temp_node = Node(temp_state, node)
                 frontier.push(temp_node)
     return None
 
