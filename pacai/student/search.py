@@ -144,6 +144,8 @@ def uniformCostSearch(problem):
             temp_action = state[1]
             temp_priority = state[2]
             temp_node = Node(temp_state, temp_action, node)
+
+            # TODO: Adjust way to check elements in frontier
             if temp_node not in frontier.list and temp_state not in reached:
                 frontier.push(temp_node, temp_priority)
     return None
