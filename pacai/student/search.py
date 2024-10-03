@@ -3,6 +3,7 @@ In this file, you will implement generic search algorithms which are called by P
 """
 from pacai.util.stack import Stack
 from pacai.util.queue import Queue
+from pacai.util.priorityQueue import PriorityQueue
 from pacai.core.actions import Actions
 
 class Node:
@@ -75,7 +76,7 @@ def breadthFirstSearch(problem):
     
 
     # *** Your Code Here ***
-    # Initialize current state, frontier stack, and reached set
+    # Initialize current state, frontier queue, and reached set
     node = Node(problem.startingState())
     frontier = Queue()
     reached = set()
@@ -83,9 +84,9 @@ def breadthFirstSearch(problem):
     
 
     # While frontier is not empty:
-    # 1. Pop frontier stack and set node to popped element
+    # 1. Pop frontier queue and set node to popped element
     # 2. Check if the node is the goal state: if it is, return it.
-    # 3. If not, add the node to the set of explored nodes and push all unvisited successors onto the frontier stack
+    # 3. If not, add the node to the set of explored nodes and push all unvisited successors onto the frontier queue
     while not frontier.isEmpty():
         node = frontier.pop()
         if problem.isGoal(node.state):
@@ -114,7 +115,40 @@ def uniformCostSearch(problem):
     """
 
     # *** Your Code Here ***
-    raise NotImplementedError()
+    # Initialize current state, frontier queue, and reached set
+    node = Node(problem.startingState())
+    frontier = PriorityQueue()
+    reached = set()
+    frontier.push(node, 0)
+
+    # While frontier is not empty:
+    # 1. Pop frontier queue and set node to popped element
+    # 2. Check if the node is the goal state: if it is, return it.
+    # 3. If not, add the node to the set of explored nodes and push all unvisited successors onto the frontier queue
+    while not frontier.isEmpty():
+        node = frontier.pop()
+        if problem.isGoal(node.state):
+            moves = []  # Array to return
+            parent = node.parent
+            while parent is not None:
+                moves.insert(0, node.action)
+                node = parent
+                parent = node.parent
+
+            return moves
+
+        reached.add(node.state)
+        successors = problem.successorStates(node.state)
+        for state in successors:
+            temp_state = state[0]
+            temp_action = state[1]
+            temp_priority = state[2]
+            temp_node = Node(temp_state, temp_action, node)
+            if temp_node not in frontier.list and temp_state not in reached:
+                frontier.push(temp_node, temp_priority)
+    return None
+
+
 
 def aStarSearch(problem, heuristic):
     """
