@@ -6,9 +6,13 @@ from pacai.util.queue import Queue
 from pacai.core.actions import Actions
 
 class Node:
-    def __init__(self, state, parent=None):
+    def __init__(self, state, action=None, parent=None):
         self.state = state
         self.parent = parent
+        self.action = action
+    
+    def __eq__(self, otherNode):
+        return self.state == otherNode.state
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first [p 85].
@@ -42,12 +46,7 @@ def depthFirstSearch(problem):
             moves = []  # Array to return
             parent = node.parent
             while parent is not None:
-                # Calculate vector direction from parent node to current node
-                # Convert vector to direction, and prepend it to move list
-                # Set node to parent, and parent to node.parent
-                vector = (node.state[0] - parent.state[0], node.state[1] - parent.state[1])
-                action = Actions.vectorToDirection(vector)
-                moves.insert(0, action)
+                moves.insert(0, node.action)
                 node = parent
                 parent = node.parent
 
@@ -57,8 +56,9 @@ def depthFirstSearch(problem):
         successors = problem.successorStates(node.state)
         for state in successors:
             temp_state = state[0]
-            if temp_state not in frontier.list and temp_state not in reached:
-                temp_node = Node(temp_state, node)
+            temp_action = state[1]
+            temp_node = Node(temp_state, temp_action, node)
+            if temp_node not in frontier.list and temp_state not in reached:
                 frontier.push(temp_node)
     return None
 
@@ -75,7 +75,7 @@ def breadthFirstSearch(problem):
     
 
     # *** Your Code Here ***
-    # Initialize current state, frontier queue, and reached set
+    # Initialize current state, frontier stack, and reached set
     node = Node(problem.startingState())
     frontier = Queue()
     reached = set()
@@ -92,12 +92,7 @@ def breadthFirstSearch(problem):
             moves = []  # Array to return
             parent = node.parent
             while parent is not None:
-                # Calculate vector direction from parent node to current node
-                # Convert vector to direction, and prepend it to move list
-                # Set node to parent, and parent to node.parent
-                vector = (node.state[0] - parent.state[0], node.state[1] - parent.state[1])
-                action = Actions.vectorToDirection(vector)
-                moves.insert(0, action)
+                moves.insert(0, node.action)
                 node = parent
                 parent = node.parent
 
@@ -107,8 +102,9 @@ def breadthFirstSearch(problem):
         successors = problem.successorStates(node.state)
         for state in successors:
             temp_state = state[0]
-            if temp_state not in frontier.list and temp_state not in reached:
-                temp_node = Node(temp_state, node)
+            temp_action = state[1]
+            temp_node = Node(temp_state, temp_action, node)
+            if temp_node not in frontier.list and temp_state not in reached:
                 frontier.push(temp_node)
     return None
 
