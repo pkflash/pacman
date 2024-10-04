@@ -8,7 +8,7 @@ from pacai.core.actions import Actions
 
 class Node:
 
-    # TODO: Implement path cost in Node class
+    # TODO: Investigate inner workings of algorithm. (Why doesn't UCS work on StayEast search agent?)
     def __init__(self, state, action=None, parent=None, cost=0):
         self.state = state
         self.parent = parent
