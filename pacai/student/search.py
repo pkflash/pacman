@@ -9,10 +9,11 @@ from pacai.core.actions import Actions
 class Node:
 
     # TODO: Implement path cost in Node class
-    def __init__(self, state, action=None, parent=None):
+    def __init__(self, state, action=None, parent=None, cost=0):
         self.state = state
         self.parent = parent
         self.action = action
+        self.cost = cost
     
     def __eq__(self, otherNode):
         return self.state == otherNode.state
@@ -125,7 +126,45 @@ def uniformCostSearch(problem):
     frontier = PriorityQueue()
     reached = set()
 
+    frontier.push(node, 0)
 
+    # While frontier is not empty:
+    # 1. Pop frontier
+    # 2. Check if the goal state is reached
+    # 3. If so, create a moves array and derive the path from the parents of the goal node
+    # 4. If not, add node state to reached set
+    # 5. Get list of successors
+    # 6. Check if each successor is in reached set or frontier
+    # 7. For each successor that is not, push node to frontier PQ
+
+    while not frontier.isEmpty():
+        node = frontier.pop()
+        if problem.isGoal(node.state):
+            moves = []
+            parent = node.parent
+            while parent is not None:
+                moves.insert(0, node.action)
+                node = parent
+                parent = node.parent
+            
+            return moves
+        reached.add(node.state)
+        successors = problem.successorStates(node.state)
+        for state in successors:
+            if state not in reached:
+                temp_state = state[0]
+                # Check if state is in frontier
+                not_in_frontier = True
+                for item in frontier.heap:  # Organized in heap as (priority, item)
+                    if item[1].state == temp_state:
+                        not_in_frontier = False
+                        break
+                if not_in_frontier:
+                    temp_action = state[1]
+                    temp_cost = state[2] + node.cost
+                    temp_node = Node(temp_state, temp_action, node, temp_cost)
+                    frontier.push(temp_node, temp_cost)
+    return None
 
 
 def aStarSearch(problem, heuristic):
