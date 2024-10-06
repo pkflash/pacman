@@ -9,7 +9,7 @@ from pacai.core.actions import Actions
 class Node:
 
     # TODO: Investigate inner workings of algorithm. (Why doesn't UCS work on StayEast search agent?)
-    def __init__(self, state, action=None, parent=None, cost=0):
+    def __init__(self, state, action=None, parent=None, cost=0.0):
         self.state = state
         self.parent = parent
         self.action = action
@@ -60,7 +60,6 @@ def depthFirstSearch(problem):
 
         reached.add(node.state)
         successors = problem.successorStates(node.state)
-        print(successors)
         for state in successors:
             temp_state = state[0]
             temp_action = state[1]
@@ -126,7 +125,7 @@ def uniformCostSearch(problem):
     frontier = PriorityQueue()
     reached = set()
 
-    frontier.push(node, 0)
+    frontier.push(node, 0.0)
 
     # While frontier is not empty:
     # 1. Pop frontier
@@ -143,7 +142,7 @@ def uniformCostSearch(problem):
             moves = []
             parent = node.parent
             while parent is not None:
-                moves.insert(0, node.action)
+                moves.insert(0, node.action)  # Prepend moves list with current action
                 node = parent
                 parent = node.parent
             
@@ -151,8 +150,8 @@ def uniformCostSearch(problem):
         reached.add(node.state)
         successors = problem.successorStates(node.state)
         for state in successors:
-            if state not in reached:
-                temp_state = state[0]
+            temp_state = state[0]
+            if temp_state not in reached:
                 # Check if state is in frontier
                 not_in_frontier = True
                 for item in frontier.heap:  # Organized in heap as (priority, item)
