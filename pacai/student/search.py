@@ -172,4 +172,9 @@ def aStarSearch(problem, heuristic):
     """
 
     # *** Your Code Here ***
-    raise NotImplementedError()
+    node = Node(problem.startingState())
+    frontier = PriorityQueue()
+    reached = set()
+
+    frontier.push(node, 0)
+    
