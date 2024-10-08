@@ -9,7 +9,7 @@ from pacai.core.actions import Actions
 class Node:
 
     # TODO: Investigate inner workings of algorithm. (Why doesn't UCS work on StayEast search agent?)
-    def __init__(self, state, action=None, parent=None, cost=0.0):
+    def __init__(self, state, action=None, parent=None, cost=0):
         self.state = state
         self.parent = parent
         self.action = action
@@ -125,7 +125,7 @@ def uniformCostSearch(problem):
     frontier = PriorityQueue()
     reached = set()
 
-    frontier.push(node, 0.0)
+    frontier.push(node, 0)
 
     # While frontier is not empty:
     # 1. Pop frontier
@@ -142,7 +142,7 @@ def uniformCostSearch(problem):
             moves = []
             parent = node.parent
             while parent is not None:
-                moves.insert(0, node.action)  # Prepend moves list with current action
+                moves.insert(0, node.action)
                 node = parent
                 parent = node.parent
             
@@ -172,9 +172,47 @@ def aStarSearch(problem, heuristic):
     """
 
     # *** Your Code Here ***
+    # Initialize current state, frontier queue, and reached set
     node = Node(problem.startingState())
     frontier = PriorityQueue()
     reached = set()
 
     frontier.push(node, 0)
-    
+
+    # While frontier is not empty:
+    # 1. Pop frontier
+    # 2. Check if the goal state is reached
+    # 3. If so, create a moves array and derive the path from the parents of the goal node
+    # 4. If not, add node state to reached set
+    # 5. Get list of successors
+    # 6. Check if each successor is in reached set or frontier
+    # 7. For each successor that is not, push node to frontier PQ
+
+    while not frontier.isEmpty():
+        node = frontier.pop()
+        if problem.isGoal(node.state):
+            moves = []
+            parent = node.parent
+            while parent is not None:
+                moves.insert(0, node.action)
+                node = parent
+                parent = node.parent
+            
+            return moves
+        reached.add(node.state)
+        successors = problem.successorStates(node.state)
+        for state in successors:
+            temp_state = state[0]
+            if temp_state not in reached:
+                # Check if state is in frontier
+                not_in_frontier = True
+                for item in frontier.heap:  # Organized in heap as (priority, item)
+                    if item[1].state == temp_state:
+                        not_in_frontier = False
+                        break
+                if not_in_frontier:
+                    temp_action = state[1]
+                    temp_cost = state[2] + node.cost + heuristic(temp_state, problem)
+                    temp_node = Node(temp_state, temp_action, node, temp_cost)
+                    frontier.push(temp_node, temp_cost)
+    return None
