@@ -65,13 +65,13 @@ class CornersProblem(SearchProblem):
                 logging.warning('Warning: no food in corner ' + str(corner))
 
         # *** Your Code Here ***
-        self.startState = (self.startingPosition, self.corners)
+        self.startState = self.startingPosition
     
     def startingState(self):
         return self.startState
     
     def isGoal(self, state):
-        for corner in state[1]:
+        for corner in self.corners:
             if corner not in self._visitHistory:
                 return False
         
