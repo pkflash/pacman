@@ -212,7 +212,8 @@ def aStarSearch(problem, heuristic):
                         break
                 if not_in_frontier:
                     temp_action = state[1]
-                    temp_cost = state[2] + node.cost + heuristic(temp_state, problem)
+                    temp_priority = state[2] + node.cost + heuristic(temp_state, problem)
+                    temp_cost = state[2] + node.cost
                     temp_node = Node(temp_state, temp_action, node, temp_cost)
-                    frontier.push(temp_node, temp_cost)
+                    frontier.push(temp_node, temp_priority)
     return None
