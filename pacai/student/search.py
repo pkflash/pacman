@@ -4,11 +4,8 @@ In this file, you will implement generic search algorithms which are called by P
 from pacai.util.stack import Stack
 from pacai.util.queue import Queue
 from pacai.util.priorityQueue import PriorityQueue
-from pacai.core.actions import Actions
 
 class Node:
-
-    # TODO: Investigate inner workings of algorithm. (Why doesn't UCS work on StayEast search agent?)
     def __init__(self, state, action=None, parent=None, cost=0):
         self.state = state
         self.parent = parent
@@ -17,8 +14,10 @@ class Node:
     
     def __eq__(self, otherNode):
         return self.state == otherNode.state
+    
     def __lt__(self, otherNode):
         return self.state < otherNode.state
+    
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first [p 85].
@@ -41,11 +40,11 @@ def depthFirstSearch(problem):
     reached = set()
     frontier.push(node)
     
-
     # While frontier is not empty:
     # 1. Pop frontier stack and set node to popped element
     # 2. Check if the node is the goal state: if it is, return it.
-    # 3. If not, add the node to the set of explored nodes and push all unvisited successors onto the frontier stack
+    # 3. If not, add the node to the set of explored nodes
+    # 3a. Push all unvisited successors onto the frontier stack
     while not frontier.isEmpty():
         node = frontier.pop()
         if problem.isGoal(node.state):
@@ -68,17 +67,10 @@ def depthFirstSearch(problem):
                 frontier.push(temp_node)
     return None
 
-
-
-    
-    
-
-
 def breadthFirstSearch(problem):
     """
     Search the shallowest nodes in the search tree first. [p 81]
     """
-    
 
     # *** Your Code Here ***
     # Initialize current state, frontier queue, and reached set
@@ -86,12 +78,12 @@ def breadthFirstSearch(problem):
     frontier = Queue()
     reached = set()
     frontier.push(node)
-    
 
     # While frontier is not empty:
     # 1. Pop frontier queue and set node to popped element
     # 2. Check if the node is the goal state: if it is, return it.
-    # 3. If not, add the node to the set of explored nodes and push all unvisited successors onto the frontier queue
+    # 3. If not, add the node to the set of explored nodes
+    # 3a. Push all unvisited successors onto the frontier queue
     while not frontier.isEmpty():
         node = frontier.pop()
         if problem.isGoal(node.state):
