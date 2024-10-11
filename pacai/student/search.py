@@ -37,7 +37,7 @@ def depthFirstSearch(problem):
     # Initialize current state, frontier stack, and reached set
     node = Node(problem.startingState())
     frontier = Stack()
-    reached = set()
+    reached = []
     frontier.push(node)
     
     # While frontier is not empty:
@@ -57,7 +57,7 @@ def depthFirstSearch(problem):
 
             return moves
 
-        reached.add(node.state)
+        reached.append(node.state)
         successors = problem.successorStates(node.state)
         for state in successors:
             temp_state = state[0]
@@ -76,7 +76,7 @@ def breadthFirstSearch(problem):
     # Initialize current state, frontier queue, and reached set
     node = Node(problem.startingState())
     frontier = Queue()
-    reached = set()
+    reached = []
     frontier.push(node)
 
     # While frontier is not empty:
@@ -96,7 +96,7 @@ def breadthFirstSearch(problem):
 
             return moves
 
-        reached.add(node.state)
+        reached.append(node.state)
         successors = problem.successorStates(node.state)
         for state in successors:
             temp_state = state[0]
@@ -115,7 +115,7 @@ def uniformCostSearch(problem):
     # Initialize current state, frontier queue, and reached set
     node = Node(problem.startingState())
     frontier = PriorityQueue()
-    reached = set()
+    reached = []
 
     frontier.push(node, 0)
 
@@ -139,7 +139,7 @@ def uniformCostSearch(problem):
                 parent = node.parent
             
             return moves
-        reached.add(node.state)
+        reached.append(node.state)
         successors = problem.successorStates(node.state)
         for state in successors:
             temp_state = state[0]
@@ -167,7 +167,7 @@ def aStarSearch(problem, heuristic):
     # Initialize current state, frontier queue, and reached set
     node = Node(problem.startingState())
     frontier = PriorityQueue()
-    reached = set()
+    reached = []
 
     frontier.push(node, 0)
 
@@ -191,7 +191,7 @@ def aStarSearch(problem, heuristic):
                 parent = node.parent
             
             return moves
-        reached.add(node.state)
+        reached.append(node.state)
         successors = problem.successorStates(node.state)
         for state in successors:
             temp_state = state[0]

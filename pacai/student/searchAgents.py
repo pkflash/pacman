@@ -65,8 +65,56 @@ class CornersProblem(SearchProblem):
                 logging.warning('Warning: no food in corner ' + str(corner))
 
         # *** Your Code Here ***
-        
+        self.visited = []
+        self.startState = (self.startingPosition, self.visited)
     
+    def startingState(self):
+        return self.startState
+    
+    def isGoal(self, state):
+        coords = state[0]
+        visited = state[1]
+        self._visitedLocations.add(coords)
+        self._visitHistory.append(coords)
+
+        if coords not in self.corners:
+            return False
+        
+        if len(visited) != len(self.corners):
+            return False
+        else:
+            return True
+    
+    def successorStates(self, current):
+        successors = []
+
+        for action in Directions.CARDINAL:
+            x, y = current[0]
+            visited = current[1]
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+            hitsWall = self.walls[nextx][nexty]
+
+            if (not hitsWall):
+                # Construct the successor.
+                temp_visited = visited.copy()
+                nextCoords = (nextx, nexty)
+                if nextCoords in self.corners and nextCoords not in visited:
+                    temp_visited.append(nextCoords)
+                
+                nextState = (nextCoords, temp_visited)
+                successors.append((nextState, action, 1))
+        # Bookkeeping for display purposes (the highlight in the GUI).
+        self._numExpanded += 1
+        if (current[0] not in self._visitedLocations):
+            self._visitedLocations.add(current[0])
+            # Note: visit history requires coordinates not states. In this situation
+            # they are equivalent.
+            coordinates = current[0]
+            self._visitHistory.append(coordinates)
+
+        return successors
+
     def actionsCost(self, actions):
         """
         Returns the cost of a particular sequence of actions.
