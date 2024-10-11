@@ -65,15 +65,14 @@ class CornersProblem(SearchProblem):
                 logging.warning('Warning: no food in corner ' + str(corner))
 
         # *** Your Code Here ***
-        self.startState = self.startingPosition
+        self.startState = (self.startingPosition, [0, 0, 0, 0])
     
     def startingState(self):
         return self.startState
     
     def isGoal(self, state):
-        for corner in self.corners:
-            if corner not in self._visitHistory:
-                return False
+        if state[1] is not [1, 1, 1, 1]:
+            return False
         
         # Register the locations we have visited.
         # This allows the GUI to highlight them.
@@ -87,16 +86,21 @@ class CornersProblem(SearchProblem):
     
     def successorStates(self, currentPosition):
         successors = []
-
+        self._visitHistory.append(currentPosition)
         for action in Directions.CARDINAL:
-            x, y = currentPosition
+            x, y = currentPosition[0]
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
             hitsWall = self.walls[nextx][nexty]
 
             if (not hitsWall):
                 # Construct the successor.
-                nextState = (nextx, nexty)
+                nextPlace = (nextx, nexty)
+                visited = currentPosition[1]
+                for i in range(len(self.corners)):
+                    if self.corners[i] in self._visitHistory:
+                        visited[i] = 1
+                nextState = (nextPlace, visited)
                 successors.append((nextState, action, 1))
 
         return successors
