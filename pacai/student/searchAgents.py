@@ -104,6 +104,7 @@ class CornersProblem(SearchProblem):
                 
                 nextState = (nextCoords, temp_visited)
                 successors.append((nextState, action, 1))
+                
         # Bookkeeping for display purposes (the highlight in the GUI).
         self._numExpanded += 1
         if (current[0] not in self._visitedLocations):

@@ -95,8 +95,8 @@ def breadthFirstSearch(problem):
                 parent = node.parent
 
             return moves
-
-        reached.append(node.state)
+        if node.state not in reached:
+            reached.append(node.state)
         successors = problem.successorStates(node.state)
         for state in successors:
             temp_state = state[0]
@@ -139,7 +139,8 @@ def uniformCostSearch(problem):
                 parent = node.parent
             
             return moves
-        reached.append(node.state)
+        if node.state not in reached:
+            reached.append(node.state)
         successors = problem.successorStates(node.state)
         for state in successors:
             temp_state = state[0]
@@ -191,7 +192,8 @@ def aStarSearch(problem, heuristic):
                 parent = node.parent
             
             return moves
-        reached.append(node.state)
+        if node.state not in reached:
+            reached.append(node.state)
         successors = problem.successorStates(node.state)
         for state in successors:
             temp_state = state[0]
