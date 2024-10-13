@@ -163,6 +163,8 @@ def cornersHeuristic(state, problem):
     
     if len(cornerList) is 0:
         return 0
+    elif len(cornerList) is 1:
+        return cornerList[0][1]
     
     # Sort elements in cornerList from least to greatest based on manhattan distance
     for i in range(len(cornerList) - 1):
@@ -171,9 +173,9 @@ def cornersHeuristic(state, problem):
                 temp = cornerList[i]
                 cornerList[i] = cornerList[j]
                 cornerList[j] = temp
-    return cornerList[0][1]
-
-
+    
+    # TODO: Find good way to process information
+    return cornerList[0][1] * len(cornerList)
 
 def foodHeuristic(state, problem):
     """
