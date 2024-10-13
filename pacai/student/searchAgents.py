@@ -7,6 +7,7 @@ Good luck and happy searching!
 
 import logging
 
+from pacai.core import distance
 from pacai.core.actions import Actions
 from pacai.core.directions import Directions
 from pacai.core.search import heuristic
@@ -150,7 +151,29 @@ def cornersHeuristic(state, problem):
     # walls = problem.walls  # These are the walls of the maze, as a Grid.
 
     # *** Your Code Here ***
-    return heuristic.null(state, problem)  # Default to trivial solution
+    # Return manhattan distance to the closest corner dot
+    coords = state[0]
+    visited = state[1]
+    corners = problem.corners
+    cornerList = []
+
+    for corner in corners:
+        if corner not in visited:
+            cornerList.append((corner, distance.manhattan(coords, corner)))
+    
+    if len(cornerList) is 0:
+        return 0
+    
+    # Sort elements in cornerList from least to greatest based on manhattan distance
+    for i in range(len(cornerList) - 1):
+        for j in range(i, len(cornerList)):
+            if cornerList[i][1] > cornerList[j][1]:
+                temp = cornerList[i]
+                cornerList[i] = cornerList[j]
+                cornerList[j] = temp
+    return cornerList[0][1]
+
+
 
 def foodHeuristic(state, problem):
     """
