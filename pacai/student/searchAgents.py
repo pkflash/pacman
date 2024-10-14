@@ -218,6 +218,12 @@ def foodHeuristic(state, problem):
     if len(distList) is 0:
         return 0
     
+    elif len(distList) is 1:
+        return distList[0][1]
+    elif len(distList) is 2:
+        gap = distance.manhattan(distList[0][0], distList[1][0])
+        return distList[0][1] + gap
+    
     # Bubble Sort
     for i in range(len(distList) - 1):
         for j in range(i, len(distList)):
@@ -227,8 +233,9 @@ def foodHeuristic(state, problem):
                 distList[j] = temp
     
     closest = distList[0][1]
-    gap = distance.manhattan(distList[0][0], distList[-1][0])
-    return closest + gap
+    gap = distance.manhattan(distList[0][0], distList[1][0])
+    gap2 = distance.manhattan(distList[1][0], distList[-1][0])
+    return closest + gap + gap2
 
 class ClosestDotSearchAgent(SearchAgent):
     """
