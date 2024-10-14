@@ -209,7 +209,25 @@ def foodHeuristic(state, problem):
     position, foodGrid = state
 
     # *** Your Code Here ***
-    return heuristic.null(state, problem)  # Default to the null heuristic.
+    foodList = foodGrid.asList()
+    distList = []
+    for food in foodList:
+        distList.append((food, distance.manhattan(food, position)))
+    
+    if len(distList) is 0:
+        return 0
+    elif len(distList) is 1:
+        return distList[0][1]
+    
+    # Bubble Sort
+    for i in range(len(distList) - 1):
+        for j in range(i, len(distList)):
+            if distList[i][1] > distList[j][1]:
+                temp = distList[i]
+                distList[i] = distList[j]
+                distList[j] = temp
+
+    return distList[0][1] * len(distList)
 
 class ClosestDotSearchAgent(SearchAgent):
     """
