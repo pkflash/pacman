@@ -15,6 +15,7 @@ from pacai.core.search.position import PositionSearchProblem
 from pacai.core.search.problem import SearchProblem
 from pacai.agents.base import BaseAgent
 from pacai.agents.search.base import SearchAgent
+from pacai.student.search import breadthFirstSearch
 
 class CornersProblem(SearchProblem):
     """
@@ -175,7 +176,7 @@ def cornersHeuristic(state, problem):
                 cornerList[j] = temp
     
     # TODO: Find good way to process information
-    return cornerList[0][1] * len(cornerList)
+    return cornerList[0][1] * len(cornerList)  # Shortest dist * # dots left
 
 def foodHeuristic(state, problem):
     """
@@ -216,8 +217,6 @@ def foodHeuristic(state, problem):
     
     if len(distList) is 0:
         return 0
-    elif len(distList) is 1:
-        return distList[0][1]
     
     # Bubble Sort
     for i in range(len(distList) - 1):
@@ -226,8 +225,10 @@ def foodHeuristic(state, problem):
                 temp = distList[i]
                 distList[i] = distList[j]
                 distList[j] = temp
-
-    return distList[0][1] * len(distList)
+    
+    closest = distList[0][1]
+    gap = distance.manhattan(distList[0][0], distList[-1][0])
+    return closest + gap
 
 class ClosestDotSearchAgent(SearchAgent):
     """
@@ -269,7 +270,8 @@ class ClosestDotSearchAgent(SearchAgent):
         # problem = AnyFoodSearchProblem(gameState)
 
         # *** Your Code Here ***
-        raise NotImplementedError()
+        problem = AnyFoodSearchProblem(gameState)
+        return breadthFirstSearch(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -296,7 +298,13 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         super().__init__(gameState, goal = None, start = start)
 
         # Store the food for later reference.
-        self.food = gameState.getFood()
+        self.food = gameState.getFood().asList()
+    
+    def isGoal(self, state):
+        if len(self.food) is 0 or state in self.food:
+            return True
+        return False
+
 
 class ApproximateSearchAgent(BaseAgent):
     """
