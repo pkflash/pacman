@@ -232,10 +232,15 @@ def foodHeuristic(state, problem):
                 temp = distList[i]
                 distList[i] = distList[j]
                 distList[j] = temp
-    closest = distList[0][1]
-    farthest = distance.manhattan(distList[0][0], distList[-1][0])
 
-    return closest + farthest
+    closest = distList[0][1]
+    gap = distance.manhattan(distList[0][0], distList[1][0])
+    if len(distList) == 2:
+        return closest + gap
+    
+    gap2 = distance.manhattan(distList[1][0], distList[-1][0])
+    gap3 = distance.manhattan(distList[-1][0], distList[-2][0])
+    return closest + gap + gap2 + gap3
 
 class ClosestDotSearchAgent(SearchAgent):
     """
