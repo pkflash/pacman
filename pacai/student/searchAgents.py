@@ -10,7 +10,6 @@ import logging
 from pacai.core import distance
 from pacai.core.actions import Actions
 from pacai.core.directions import Directions
-from pacai.core.search import heuristic
 from pacai.core.search.position import PositionSearchProblem
 from pacai.core.search.problem import SearchProblem
 from pacai.agents.base import BaseAgent
@@ -162,9 +161,9 @@ def cornersHeuristic(state, problem):
         if corner not in visited:
             cornerList.append((corner, distance.manhattan(coords, corner)))
     
-    if len(cornerList) is 0:
+    if len(cornerList) == 0:
         return 0
-    elif len(cornerList) is 1:
+    elif len(cornerList) == 1:
         return cornerList[0][1]
     
     # Sort elements in cornerList from least to greatest based on manhattan distance
@@ -175,8 +174,13 @@ def cornersHeuristic(state, problem):
                 cornerList[i] = cornerList[j]
                 cornerList[j] = temp
     
-    # TODO: Find good way to process information
-    return cornerList[0][1] * len(cornerList)  # Shortest dist * # dots left
+    closest = cornerList[0][1]
+    gap = distance.manhattan(cornerList[0][0], cornerList[1][0])
+    if len(cornerList) == 2:
+        return closest + gap
+    
+    gap2 = distance.manhattan(cornerList[1][0], cornerList[-1][0])
+    return closest + gap + gap2
 
 def foodHeuristic(state, problem):
     """
@@ -215,14 +219,11 @@ def foodHeuristic(state, problem):
     for food in foodList:
         distList.append((food, distance.manhattan(food, position)))
     
-    if len(distList) is 0:
+    if len(distList) == 0:
         return 0
     
-    elif len(distList) is 1:
+    elif len(distList) == 1:
         return distList[0][1]
-    elif len(distList) is 2:
-        gap = distance.manhattan(distList[0][0], distList[1][0])
-        return distList[0][1] + gap
     
     # Bubble Sort
     for i in range(len(distList) - 1):
@@ -231,11 +232,10 @@ def foodHeuristic(state, problem):
                 temp = distList[i]
                 distList[i] = distList[j]
                 distList[j] = temp
-    
     closest = distList[0][1]
-    gap = distance.manhattan(distList[0][0], distList[1][0])
-    gap2 = distance.manhattan(distList[1][0], distList[-1][0])
-    return closest + gap + gap2
+    farthest = distance.manhattan(distList[0][0], distList[-1][0])
+
+    return closest + farthest
 
 class ClosestDotSearchAgent(SearchAgent):
     """
@@ -308,7 +308,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         self.food = gameState.getFood().asList()
     
     def isGoal(self, state):
-        if len(self.food) is 0 or state in self.food:
+        if len(self.food) == 0 or state in self.food:
             return True
         return False
 
