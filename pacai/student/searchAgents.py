@@ -217,7 +217,7 @@ def foodHeuristic(state, problem):
     foodList = foodGrid.asList()
     distList = []
     for food in foodList:
-        distList.append((food, distance.manhattan(food, position)))
+        distList.append((food, distance.maze(food, position, problem.startingGameState)))
     
     if len(distList) == 0:
         return 0
@@ -233,15 +233,13 @@ def foodHeuristic(state, problem):
                 distList[i] = distList[j]
                 distList[j] = temp
 
-    closest = distList[0][1]
-    gap = distance.manhattan(distList[0][0], distList[1][0])
-    if len(distList) == 2:
-        return closest + gap
-    
-    gap2 = distance.manhattan(distList[1][0], distList[-1][0])
-    gap3 = distance.manhattan(distList[-1][0], distList[-2][0])
-    return closest + gap + gap2 + gap3
+    farthest = distList[-1][0]
+    next_farthest = distList[-2]
 
+    gap1 = next_farthest[1]
+    gap2 = distance.maze(next_farthest[0], farthest, problem.startingGameState)
+
+    return gap1 + gap2
 class ClosestDotSearchAgent(SearchAgent):
     """
     Search for all food using a sequence of searches.
