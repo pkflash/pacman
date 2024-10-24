@@ -156,14 +156,13 @@ class MinimaxAgent(MultiAgentSearchAgent):
         actions = gameState.getLegalActions()
         actions.remove("Stop")
         
-        # Generate successor state
-        # Get agent that last moved in successor state
-        # Generate min value of state and agent
+        # Generate successor state for pac man (index 0)
+        # Generate min value of state and ghosts (starting at index 1)
         # Append (action, value) pair to moves
         for action in actions:
             next_state = gameState.generateSuccessor(0, action)
-            agent = next_state.getLastAgentMoved()
-            pair = (action, self.min_value(next_state, agent + 1, 0))
+            value = self.min_value(next_state, 1, 0)
+            pair = (action, value)
             moves.append(pair)
         
         # Get max value of all pairs
