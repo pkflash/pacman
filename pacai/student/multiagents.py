@@ -1,5 +1,4 @@
 import random
-
 from pacai.agents.base import BaseAgent
 from pacai.agents.search.multiagent import MultiAgentSearchAgent
 from pacai.core import distance
@@ -118,6 +117,61 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
     def __init__(self, index, **kwargs):
         super().__init__(index, **kwargs)
+    
+    def min_value(self, state, agent, depth):
+        if depth == self.getTreeDepth() or state.isOver():
+            return self.getEvaluationFunction()(state)
+        value = float('inf')
+        actions = state.getLegalActions(agent)
+        # Call max_value function if this is the last ghost
+        # Increment depth only after all ghosts are explored
+        if agent == state.getNumAgents() - 1:
+            for action in actions:
+                next_state = state.generateSuccessor(agent, action)
+                value = min(value, self.max_value(next_state, 0, depth + 1))
+            return value
+        
+        else:
+            for action in actions:
+                next_state = state.generateSuccessor(agent, action)
+                value = min(value, self.min_value(next_state, agent + 1, depth))
+            return value
+    
+    def max_value(self, state, agent, depth):
+        if depth == self.getTreeDepth() or state.isOver():
+            return self.getEvaluationFunction()(state)
+        value = float('-inf')
+
+        # This function only gets called for pac-man
+        actions = state.getLegalActions(agent)
+        for action in actions:
+            next_state = state.generateSuccessor(agent, action)
+            value = max(value, self.min_value(next_state, agent + 1, depth))
+        return value
+
+
+
+    def getAction(self, gameState):
+        moves = []
+        actions = gameState.getLegalActions()
+        actions.remove("Stop")
+        
+        # Generate successor state
+        # Get agent that last moved in successor state
+        # Generate min value of state and agent
+        # Append (action, value) pair to moves
+        for action in actions:
+            next_state = gameState.generateSuccessor(0, action)
+            agent = next_state.getLastAgentMoved()
+            pair = (action, self.min_value(next_state, agent + 1, 0))
+            moves.append(pair)
+        
+        # Get max value of all pairs
+        final_action = max(moves, key=lambda pair: pair[1])
+        return final_action[0]
+
+
+
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
