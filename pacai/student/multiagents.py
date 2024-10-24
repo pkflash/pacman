@@ -62,7 +62,6 @@ class ReflexAgent(BaseAgent):
         newPosition = successorGameState.getPacmanPosition()
         oldFood = currentGameState.getFood().asList()
         newGhostStates = successorGameState.getGhostStates()
-        newScaredTimes = [ghostState.getScaredTimer() for ghostState in newGhostStates]
 
         # Compute distance to closest food
         distances = [(food, distance.maze(newPosition, food, currentGameState)) for food in oldFood]
@@ -72,6 +71,7 @@ class ReflexAgent(BaseAgent):
 
         # Compute minimum ghost distance and check if pac man is about to die
         closest_ghost = 0
+        closest_ghost_obj = None
         if len(newGhostStates) != 0:
             # Initialize closest_ghost with first element in newGhostStates
             closest_ghost = distance.manhattan(newPosition, newGhostStates[0].getPosition())
@@ -79,11 +79,14 @@ class ReflexAgent(BaseAgent):
         for ghost in newGhostStates:
             pos = ghost.getPosition()  # Sometimes pos contains floats
             temp_dist = distance.manhattan(newPosition, pos)
-            if temp_dist < 2:
+            if temp_dist < 2 and ghost.getScaredTimer() != 0:
+                return 1000
+            elif temp_dist < 2:
                 return -1000
             elif temp_dist < closest_ghost:
                 closest_ghost = temp_dist
 
+        
         return successorGameState.getScore() - min_distance * 2 + closest_ghost
 
 class MinimaxAgent(MultiAgentSearchAgent):
