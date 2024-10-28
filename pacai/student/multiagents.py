@@ -253,8 +253,63 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
     def __init__(self, index, **kwargs):
         super().__init__(index, **kwargs)
     
+    def calculate_exp(self, numList):
+        # Calculate expectation assuming uniform probability distribution
+        probability = 1 / len(numList)
+        expectation = 0
+        for item in numList:
+            expectation += item * probability
+        return expectation
+    
+    def expected_value(self, state, agent, depth):
+        if depth == self.getTreeDepth() or state.isOver():
+            return self.getEvaluationFunction()(state)
+        values = []
+        actions = state.getLegalActions(agent)
+        # Call max_value function if this is the last ghost
+        # Increment depth only after all ghosts are explored
+        if agent == state.getNumAgents() - 1:
+            for action in actions:
+                next_state = state.generateSuccessor(agent, action)
+                values.append(self.max_value(next_state, 0, depth + 1))
+
+            return self.calculate_exp(values)
+        
+        else:
+            for action in actions:
+                next_state = state.generateSuccessor(agent, action)
+                values.append(self.expected_value(next_state, agent + 1, depth))
+            
+            return self.calculate_exp(values)
+    
+    def max_value(self, state, agent, depth):
+        if depth == self.getTreeDepth() or state.isOver():
+            return self.getEvaluationFunction()(state)
+        value = float('-inf')
+        actions = state.getLegalActions(agent)
+        for action in actions:
+            next_state = state.generateSuccessor(agent, action)
+            # Call chance nodes here
+            value = max(value, self.expected_value(next_state, agent + 1, depth))
+        return value
+    
     def getAction(self, gameState):
-        pass
+        moves = []
+        actions = gameState.getLegalActions()
+        actions.remove("Stop")
+        
+        # Generate successor state for pac man (index 0)
+        # Generate min value of state and ghosts (starting at index 1)
+        # Append (action, value) pair to moves
+        for action in actions:
+            next_state = gameState.generateSuccessor(0, action)
+            value = self.expected_value(next_state, 1, 0)
+            pair = (action, value)
+            moves.append(pair)
+        
+        # Get max value of all pairs
+        final_action = max(moves, key=lambda pair: pair[1])
+        return final_action[0]
 
 
 def betterEvaluationFunction(currentGameState):
