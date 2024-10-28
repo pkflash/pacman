@@ -48,7 +48,6 @@ class ReflexAgent(BaseAgent):
         Make sure to understand the range of different values before you combine them
         in your evaluation function.
         """
-
         successorGameState = currentGameState.generatePacmanSuccessor(action)
 
         # Useful information you can extract.
@@ -63,14 +62,12 @@ class ReflexAgent(BaseAgent):
         newGhostStates = successorGameState.getGhostStates()
 
         # Compute distance to closest food
-        distances = [(food, distance.maze(newPosition, food, currentGameState)) for food in oldFood]
+        distances = [(food, distance.manhattan(newPosition, food)) for food in oldFood]
         distances.sort(key = lambda x: x[1])
         min_distance = distances[0][1]
 
-
         # Compute minimum ghost distance and check if pac man is about to die
         closest_ghost = 0
-        closest_ghost_obj = None
         if len(newGhostStates) != 0:
             # Initialize closest_ghost with first element in newGhostStates
             closest_ghost = distance.manhattan(newPosition, newGhostStates[0].getPosition())
@@ -85,7 +82,6 @@ class ReflexAgent(BaseAgent):
             elif temp_dist < closest_ghost:
                 closest_ghost = temp_dist
 
-        
         return successorGameState.getScore() - min_distance * 2 + closest_ghost
 
 class MinimaxAgent(MultiAgentSearchAgent):
@@ -148,9 +144,80 @@ class MinimaxAgent(MultiAgentSearchAgent):
             next_state = state.generateSuccessor(agent, action)
             value = max(value, self.min_value(next_state, agent + 1, depth))
         return value
+    
+    def getAction(self, gameState):
+        moves = []
+        actions = gameState.getLegalActions()
+        actions.remove("Stop")
+        
+        # Generate successor state for pac man (index 0)
+        # Generate min value of state and ghosts (starting at index 1)
+        # Append (action, value) pair to moves
+        for action in actions:
+            next_state = gameState.generateSuccessor(0, action)
+            value = self.min_value(next_state, 1, 0)
+            pair = (action, value)
+            moves.append(pair)
+        
+        # Get max value of all pairs
+        final_action = max(moves, key=lambda pair: pair[1])
+        return final_action[0]
+    
+class AlphaBetaAgent(MultiAgentSearchAgent):
+    """
+    A minimax agent with alpha-beta pruning.
 
+    Method to Implement:
 
+    `pacai.agents.base.BaseAgent.getAction`:
+    Returns the minimax action from the current gameState using
+    `pacai.agents.search.multiagent.MultiAgentSearchAgent.getTreeDepth`
+    and `pacai.agents.search.multiagent.MultiAgentSearchAgent.getEvaluationFunction`.
+    """
 
+    def __init__(self, index, **kwargs):
+        super().__init__(index, **kwargs)
+    
+    def min_value(self, state, agent, depth, alpha=float('-inf'), beta=float('inf')):
+        if depth == self.getTreeDepth() or state.isOver():
+            return self.getEvaluationFunction()(state)
+        value = float('inf')
+        actions = state.getLegalActions(agent)
+        # Call max_value function if this is the last ghost
+        # Increment depth only after all ghosts are explored
+        if agent == state.getNumAgents() - 1:
+            for action in actions:
+                next_state = state.generateSuccessor(agent, action)
+                value = min(value, self.max_value(next_state, 0, depth + 1, alpha, beta))
+                if value <= alpha:
+                    break
+                beta = min(beta, value)
+            return value
+        
+        else:
+            for action in actions:
+                next_state = state.generateSuccessor(agent, action)
+                value = min(value, self.min_value(next_state, agent + 1, depth, alpha, beta))
+                if value <= alpha:
+                    break
+                beta = min(beta, value)
+            return value
+    
+    def max_value(self, state, agent, depth, alpha=float('-inf'), beta=float('inf')):
+        if depth == self.getTreeDepth() or state.isOver():
+            return self.getEvaluationFunction()(state)
+        value = float('-inf')
+
+        # This function only gets called for pac-man
+        actions = state.getLegalActions(agent)
+        for action in actions:
+            next_state = state.generateSuccessor(agent, action)
+            value = max(value, self.min_value(next_state, agent + 1, depth, alpha, beta))
+            if value >= beta:
+                break
+            alpha = max(alpha, value)
+        return value
+    
     def getAction(self, gameState):
         moves = []
         actions = gameState.getLegalActions()
@@ -169,24 +236,6 @@ class MinimaxAgent(MultiAgentSearchAgent):
         final_action = max(moves, key=lambda pair: pair[1])
         return final_action[0]
 
-
-
-
-class AlphaBetaAgent(MultiAgentSearchAgent):
-    """
-    A minimax agent with alpha-beta pruning.
-
-    Method to Implement:
-
-    `pacai.agents.base.BaseAgent.getAction`:
-    Returns the minimax action from the current gameState using
-    `pacai.agents.search.multiagent.MultiAgentSearchAgent.getTreeDepth`
-    and `pacai.agents.search.multiagent.MultiAgentSearchAgent.getEvaluationFunction`.
-    """
-
-    def __init__(self, index, **kwargs):
-        super().__init__(index, **kwargs)
-
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
     An expectimax agent.
@@ -203,6 +252,10 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
 
     def __init__(self, index, **kwargs):
         super().__init__(index, **kwargs)
+    
+    def getAction(self, gameState):
+        pass
+
 
 def betterEvaluationFunction(currentGameState):
     """
