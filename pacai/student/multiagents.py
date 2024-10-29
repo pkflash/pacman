@@ -319,6 +319,7 @@ def betterEvaluationFunction(currentGameState):
     DESCRIPTION: ReflexAgent evaluation function: state_score - min_distance * 2 + closest_ghost
     Things to factor in:
     - Number of food objects left
+    - Distance to nearest capsule
     - Distance to second-farthest dot (manhattan)
     - Distance between second-farthest dot and farthest dot (maze)
     - Distance to all ghosts
@@ -327,7 +328,7 @@ def betterEvaluationFunction(currentGameState):
     pos = currentGameState.getPacmanPosition()
     food = currentGameState.getFood().asList()
     ghostStates = currentGameState.getGhostStates()
-
+    capsules = currentGameState.getCapsules()
     # Compute distance from pac man to all ghosts and add them up
     # Check if any of the ghosts are about to kill pac man
     net_ghostDist = 0
@@ -338,20 +339,28 @@ def betterEvaluationFunction(currentGameState):
         scaredTime = ghost.getScaredTimer()
         if ghostDist < 2:
             return -1000
-        net_ghostDist += ghostDist
-        net_scaredTime += scaredTime
+        
+        if scaredTime != 0:
+            net_ghostDist += 1000 / ghostDist  # Reward being closer to ghost
+        else:
+            net_ghostDist += ghostDist
+
     if len(food) < 2:
         return currentGameState.getScore() + net_ghostDist + net_scaredTime * 3
     # Compute distance to second_farthest food
     distances = [(food_obj, distance.manhattan(pos, food_obj)) for food_obj in food]
     distances.sort(key = lambda x: x[1], reverse=True)
+    
+    # Compute distance to nearest capsule
+    capsuleDistances = [(cap, distance.manhattan(pos, cap)) for cap in capsules]
+    capsuleDistances.sort(key = lambda x: x[1], reverse=True)
 
     pac_distance = distances[1][1]
     dot_distance = distance.maze(distances[-2][0], distances[-1][0], currentGameState)
 
     
 
-    return currentGameState.getScore() - len(food) - pac_distance - dot_distance + net_ghostDist + net_scaredTime * 3
+    return currentGameState.getScore() - len(food) - pac_distance - dot_distance + net_ghostDist
 
 class ContestAgent(MultiAgentSearchAgent):
     """
