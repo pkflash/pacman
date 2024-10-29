@@ -357,9 +357,6 @@ def betterEvaluationFunction(currentGameState):
 
     pac_distance = distances[1][1]
     dot_distance = distance.maze(distances[-2][0], distances[-1][0], currentGameState)
-
-    
-
     return currentGameState.getScore() - len(food) - pac_distance - dot_distance + net_ghostDist
 
 class ContestAgent(MultiAgentSearchAgent):
