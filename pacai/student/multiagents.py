@@ -341,7 +341,7 @@ def betterEvaluationFunction(currentGameState):
             return -1000
         
         if scaredTime != 0:
-            net_ghostDist += 1000 / ghostDist  # Reward being closer to ghost
+            net_ghostDist += 1000 / ghostDist  # Reward being closer to ghost if ghost is scared
         else:
             net_ghostDist += ghostDist
 
