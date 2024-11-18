@@ -41,35 +41,33 @@ class ValueIterationAgent(ValueEstimationAgent):
         # Compute the values here.
         states = self.mdp.getStates()
         for state in states:
-            self.values[states] = self.getValue(state)
+            self.values[state] = self.getValue(state)
         
         for i in range(self.iters):
+            temp_values = dict(self.values)
             for state in states:
                 # Get max q value out of all actions in mdp.getPossibleActions
                 q_value = float('-inf')
-                for action in self.mdp.getPossibleActions():
+                for action in self.mdp.getPossibleActions(state):
                     q_value = max(q_value, self.getQValue(state, action))
-                if q_value != float('-inf'):
-                    self.values[state] = q_value
-
-
+                if q_value != float('-inf') and q_value > self.values[state]:
+                    temp_values[state] = q_value
+            self.values = dict(temp_values)
 
     def getValue(self, state):
         """
         Return the value of the state (computed in __init__).
         """
-        
 
         return self.values.get(state, 0.0)
     
     def getQValue(self, state, action):
-        transition = self.mdp.getTransitionStatesAndProbs()
-        reward = self.mdp.getReward()
-        next_states = transition(state, action)
+        transition = self.mdp.getTransitionStatesAndProbs(state, action)
+        reward = self.mdp.getReward
         q_value = 0.0
 
         # Q(s, a) = T(s, a, s') * (R(s, a, s') + discount * V(s'))
-        for item in next_states:
+        for item in transition:
             next_state, probability = item
             temp_reward = reward(state, action, next_state)
             value = self.getValue(next_state)
@@ -88,7 +86,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         ret_action = None
         max_value = float('-inf')
 
-        for action in self.mdp.getPossibleActions():
+        for action in self.mdp.getPossibleActions(state):
             temp = self.getQValue(state, action)
             if temp > max_value:
                 ret_action = action
