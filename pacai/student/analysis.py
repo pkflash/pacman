@@ -11,11 +11,12 @@ NOT_POSSIBLE = None
 
 def question2():
     """
-    [Enter a description of what you did here.]
+    [The optimal policy wants the agent to cross the bridge fully, 
+    so setting the noise to 0.0 allows the optimal policy to be followed without fail]
     """
 
     answerDiscount = 0.9
-    answerNoise = 0.2
+    answerNoise = 0.0
 
     return answerDiscount, answerNoise
 
