@@ -45,14 +45,15 @@ def question3b():
 
 def question3c():
     """
-    Impossible to take distant exit and risk the cliff at the same time
+    Increase noise to 0.3, optimal policy prefers slow route but there's still a chance
+    for the agent to risk the bridge if unlucky
     """
 
     answerDiscount = 0.9
-    answerNoise = 0.2
+    answerNoise = 0.3
     answerLivingReward = 0.0
 
-    return NOT_POSSIBLE
+    return answerDiscount, answerNoise, answerLivingReward
 
 def question3d():
     """

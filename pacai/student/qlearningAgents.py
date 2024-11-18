@@ -39,13 +39,14 @@ class QLearningAgent(ReinforcementAgent):
     You should do your Q-Value update here.
     Note that you should never call this function, it will be called on your behalf.
 
-    DESCRIPTION: <Write something here so we know what you did.>
+    DESCRIPTION: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
     """
 
     def __init__(self, index, **kwargs):
         super().__init__(index, **kwargs)
 
         # You can initialize Q-values here.
+        self.values = {}
 
     def getQValue(self, state, action):
         """
@@ -69,7 +70,7 @@ class QLearningAgent(ReinforcementAgent):
         Whereas this method returns the value of the best action.
         """
 
-        return 0.0
+        return self.values.get(state, 0.0)
 
     def getPolicy(self, state):
         """
