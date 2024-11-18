@@ -11,8 +11,8 @@ NOT_POSSIBLE = None
 
 def question2():
     """
-    [The optimal policy wants the agent to cross the bridge fully, 
-    so setting the noise to 0.0 allows the optimal policy to be followed without fail]
+    The optimal policy wants the agent to cross the bridge fully, 
+    so setting the noise to 0.0 allows the optimal policy to be followed without fail
     """
 
     answerDiscount = 0.9
@@ -22,40 +22,41 @@ def question2():
 
 def question3a():
     """
-    [Enter a description of what you did here.]
+    Raise living reward to high enough value where the algorithm
+    would rather risk falling into the cliff than take the long way
     """
 
     answerDiscount = 0.9
     answerNoise = 0.2
-    answerLivingReward = 0.0
+    answerLivingReward = -1
 
     return answerDiscount, answerNoise, answerLivingReward
 
 def question3b():
     """
-    [Enter a description of what you did here.]
+    Keep the same living reward as part a, but reduce noise to 0
     """
 
     answerDiscount = 0.9
-    answerNoise = 0.2
-    answerLivingReward = 0.0
+    answerNoise = 0.0
+    answerLivingReward = -1
 
     return answerDiscount, answerNoise, answerLivingReward
 
 def question3c():
     """
-    [Enter a description of what you did here.]
+    Impossible to take distant exit and risk the cliff at the same time
     """
 
     answerDiscount = 0.9
     answerNoise = 0.2
     answerLivingReward = 0.0
 
-    return answerDiscount, answerNoise, answerLivingReward
+    return NOT_POSSIBLE
 
 def question3d():
     """
-    [Enter a description of what you did here.]
+    Keep living reward at 0 to prioritize safely getting to the exit
     """
 
     answerDiscount = 0.9
@@ -66,12 +67,12 @@ def question3d():
 
 def question3e():
     """
-    [Enter a description of what you did here.]
+    Set living reward to high value to reward agent for prolonging the game and not exiting
     """
 
     answerDiscount = 0.9
     answerNoise = 0.2
-    answerLivingReward = 0.0
+    answerLivingReward = 100
 
     return answerDiscount, answerNoise, answerLivingReward
 
