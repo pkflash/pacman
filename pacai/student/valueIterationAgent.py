@@ -50,7 +50,7 @@ class ValueIterationAgent(ValueEstimationAgent):
                 q_value = float('-inf')
                 for action in self.mdp.getPossibleActions(state):
                     q_value = max(q_value, self.getQValue(state, action))
-                if q_value != float('-inf') and q_value > self.values[state]:
+                if q_value != float('-inf'):
                     temp_values[state] = q_value
             self.values = dict(temp_values)
 
