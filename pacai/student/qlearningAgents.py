@@ -3,6 +3,7 @@ from pacai.util import probability
 from pacai.util import reflection
 
 import random
+import numpy as np
 
 class QLearningAgent(ReinforcementAgent):
     """
@@ -50,18 +51,6 @@ class QLearningAgent(ReinforcementAgent):
 
         # You can initialize Q-values here.
         self.q_values = {}
-
-    def getAction(self, state):
-        # Flip coin based on exploration probability
-        coin = probability.flipCoin(1 - self.getEpsilon())
-        actions = self.getLegalActions(state)
-        ret = None
-        if coin:
-            ret = self.getPolicy(state)
-        else:
-            ret = random.choice(actions)
-        
-        return ret
 
     def getQValue(self, state, action):
         """
@@ -132,6 +121,18 @@ class QLearningAgent(ReinforcementAgent):
         # Q(s, a) = (1 - alpha) * Q(s, a) + (alpha * sample)
         current_q = (1 - alpha) * current_q + (alpha * sample)
         self.q_values[(state, action)] = current_q
+    
+    def getAction(self, state):
+        # Flip coin based on exploration probability
+        coin = probability.flipCoin(self.getEpsilon())
+        actions = self.getLegalActions(state)
+        ret = None
+        if coin:
+            ret = random.choice(actions)
+        else:
+            ret = self.getPolicy(state)
+        
+        return ret
 
 class PacmanQAgent(QLearningAgent):
     """
@@ -174,7 +175,7 @@ class ApproximateQAgent(PacmanQAgent):
     `pacai.agents.learning.reinforcement.ReinforcementAgent.update`:
     Should update your weights based on transition.
 
-    DESCRIPTION: <Write something here so we know what you did.>
+    DESCRIPTION: 
     """
 
     def __init__(self, index,
@@ -183,12 +184,37 @@ class ApproximateQAgent(PacmanQAgent):
         self.featExtractor = reflection.qualifiedImport(extractor)
 
         # You might want to initialize weights here.
+        self.weights = {}
+
+    def getQValue(self, state, action):
+        features = self.featExtractor.getFeatures(self, state, action)
+        ret = 0.0
+
+        for feature in features:
+            if feature not in self.weights:
+                continue
+            weight = self.weights[feature]
+            ret += weight * features[feature]
+
+        return ret
+        
+    def update(self, state, action, nextState, reward):
+        discount = self.getDiscountRate()
+        alpha = self.getAlpha()
+        value = self.getValue(nextState)
+        q_value = self.getQValue(state, action)
+        features = self.featExtractor.getFeatures(self, state, action)
+        correction = (reward + discount * value) - q_value
+        # 𝑤←𝑤+𝛼[𝑐𝑜𝑟𝑟𝑒𝑐𝑡𝑖𝑜𝑛]𝑓𝑖(𝑠,𝑎)
+        # 𝑐𝑜𝑟𝑟𝑒𝑐𝑡𝑖on=(𝑅(𝑠,𝑎)+𝛾𝑉′(𝑠))−𝑄(𝑠,𝑎)
+        for feature in features:
+            self.weights[feature] = self.weights.get(feature, 0.0) + alpha * correction * features[feature] 
 
     def final(self, state):
         """
         Called at the end of each game.
         """
-
+        alpha = self.getAlpha()
         # Call the super-class final method.
         super().final(state)
 
@@ -196,4 +222,4 @@ class ApproximateQAgent(PacmanQAgent):
         if self.episodesSoFar == self.numTraining:
             # You might want to print your weights here for debugging.
             # *** Your Code Here ***
-            raise NotImplementedError()
+            pass

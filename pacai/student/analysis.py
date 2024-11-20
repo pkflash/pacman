@@ -79,13 +79,13 @@ def question3e():
 
 def question6():
     """
-    [Enter a description of what you did here.]
+    It is not possible to have a 99% probability of visiting every state if given 50 iterations
     """
 
-    answerEpsilon = 0.3
-    answerLearningRate = 0.5
+    # answerEpsilon = 0.3
+    # answerLearningRate = 0.5
 
-    return answerEpsilon, answerLearningRate
+    return NOT_POSSIBLE
 
 if __name__ == '__main__':
     questions = [
