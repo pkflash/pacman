@@ -3,7 +3,6 @@ from pacai.util import probability
 from pacai.util import reflection
 
 import random
-import numpy as np
 
 class QLearningAgent(ReinforcementAgent):
     """
@@ -175,7 +174,7 @@ class ApproximateQAgent(PacmanQAgent):
     `pacai.agents.learning.reinforcement.ReinforcementAgent.update`:
     Should update your weights based on transition.
 
-    DESCRIPTION: 
+    DESCRIPTION:
     """
 
     def __init__(self, index,
@@ -207,14 +206,13 @@ class ApproximateQAgent(PacmanQAgent):
         correction = (reward + discount * value) - q_value
         # 𝑤←𝑤+𝛼[𝑐𝑜𝑟𝑟𝑒𝑐𝑡𝑖𝑜𝑛]𝑓𝑖(𝑠,𝑎)
         # 𝑐𝑜𝑟𝑟𝑒𝑐𝑡𝑖on=(𝑅(𝑠,𝑎)+𝛾𝑉′(𝑠))−𝑄(𝑠,𝑎)
-        for feature in features:
-            self.weights[feature] = self.weights.get(feature, 0.0) + alpha * correction * features[feature] 
+        for f in features:
+            self.weights[f] = self.weights.get(f, 0.0) + alpha * correction * features[f]
 
     def final(self, state):
         """
         Called at the end of each game.
         """
-        alpha = self.getAlpha()
         # Call the super-class final method.
         super().final(state)
 
